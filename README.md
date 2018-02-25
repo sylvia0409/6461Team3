@@ -1,3 +1,6 @@
+Add instructions.
+
+
 Change CC register to int[].
 
 Add registerStack and class ALU.
