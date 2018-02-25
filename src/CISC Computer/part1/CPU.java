@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package pkg6461_t3_project1;
+package part1;
 
 /**
  *

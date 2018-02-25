@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package pkg6461_t3_project1;
+package part1;
 
 /**
  *
@@ -11,9 +11,6 @@ package pkg6461_t3_project1;
  */
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 
 
@@ -58,7 +55,7 @@ public class ControlPanel extends JFrame{
         this.frame.setLayout(new BorderLayout(10,10));
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.frame.setLocation(500,50);
-        this.frame.setResizable(false);
+        this.frame.setResizable(true);
         this.panel_left=new JPanel(new GridLayout(14,1));
         
         
