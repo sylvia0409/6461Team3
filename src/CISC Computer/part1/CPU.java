@@ -1,5 +1,14 @@
-package Part1;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package part1;
 
+/**
+ *
+ * @author yiqian
+ */
 public class CPU {
     /**
     When we fetch the value from memory, the data type which need to store values
@@ -7,64 +16,26 @@ public class CPU {
     location or address are set to int.
     The int implies its value is decimal number, the string implies binary number
      */
-    int PC = 0;     //program counter
-    String CC = ""; //condition code
-    String IR = ""; //Instruction Register, store string format of the binary number
-    int MAR = 0;    //Memory Address Register
-    String MBR = "";//Memory Buffer Register
-    String MSR = "";//Machine Status Register
-    int MFR = 0;    //Machine Fault Register, contains Fault ID
-    int IAR = 0;    //Internal Address Register
-    String IRR = "";//Internal Result Register
-    int clock = 0;
+    private int PC = 0;     //program counter
+    private String CC = "0"; //condition code
+    private String IR = "0"; //Instruction Register, store string format of the binary number
+    private int MAR = 0;    //Memory Address Register
+    private String MBR = "";//Memory Buffer Register
+    private String MSR = "0";//Machine Status Register
+    private int MFR = 0;    //Machine Fault Register, contains Fault ID
+    private int IAR = 0;    //Internal Address Register
+    private String IRR = "0";//Internal Result Register
+    Memory mainMemoryStore;
 
+    public int opcode, registerSelect, IX, I, address;
+    public int clock;
     //create 4 general registers
     String[] R = new String[4];
 
     //create 3 index registers
     int[] X = new int[3];
-
-    public void execute(Memory mainMemory, int memoryLocation){
-        //initialize PC
-        PC = memoryLocation;
-        if(mainMemory.getValue(PC) == null){
-            return;
-        }
-        //put location from PC to MAR ,it needs 1 clock
-        MAR = PC;
-        clock++;
-        //MCU uses the address in the MAR to fetch a word from memory and place it in MBR
-        MBR = mainMemory.getValue(MAR);
-        clock++;
-        //The contents of MBR are moved to the IR. This takes 1 cycle.
-        IR = MBR;
-        clock++;
-        //extract the opcode, R(registerSelect), IX, I, address from the IR.
-        //we transfer long to int for saving space of memory,
-        //instructions below show the transfer process: string of binary number -> long -> int
-        int opcode = Integer.parseInt(String.valueOf(Long.valueOf(IR)/100000/100000),2);
-        int registerSelect = Integer.parseInt(String.valueOf(Long.valueOf(IR)/100000000%100),2);
-        int IX = Integer.parseInt(String.valueOf(Long.valueOf(IR)/1000000%100),2);
-        int I = Integer.parseInt(String.valueOf(Long.valueOf(IR)/100000%10));
-        int address = Integer.parseInt(String.valueOf(Long.valueOf(IR)%100000),2);
-        clock++;
-        //determine the class of opcode
-        switch (opcode){
-            case 1: LDR(mainMemory, registerSelect, IX, I, address);
-            break;
-            case 2: STR(mainMemory, registerSelect, IX, I, address);
-            break;
-            case 3: LDA(mainMemory, registerSelect, IX, I, address);
-            break;
-            case 41: LDX(mainMemory, IX, I, address);
-            break;
-            case 42: STX(mainMemory, IX, I, address);
-            break;
-
-        }
-        PC++;
-        execute(mainMemory, PC);
-    }
+    
+    
 
     public void LDR(Memory mainMemory, int registerSelect, int IX, int I, int address){
         // use the address in instruction to compute the Effective Address
@@ -155,9 +126,89 @@ public class CPU {
         }
         return IAR;
     }
+    
+    
+    //inital the value of reg
     public void setIndexRegister(int registerSelect, int content){
         X[registerSelect] = content;
     }
+    
+    public void setPC(int PCin){
+        PC = PCin;
+    }
+    
+    public void setGeneralRegister(int index, String content){
+        R[index] = content;
+    }
+    
+    public void setMAR(int MARin){
+        this.MAR = MARin;
+    }
+    
+    public void setMBR(String MBRin){
+        this.MBR = MBRin;
+    }
+    
+    public void setMFR(int MFRin){
+        this.MFR = MFRin;
+    }
+    
+    public void setIR(String IRin){
+        this.IR = IRin;
+    }
+    
+    public int getPC(){
+        return this.PC;
+    }
+    
+    public String getR0(){
+        return this.R[0];
+    }
+    
+    public String getR1(){
+        return this.R[1];
+    }
+    
+    public String getR2(){
+        return this.R[2];
+    }
+    
+    public String getR3(){
+        return this.R[3];
+    }
+    
+    public int getX1(){
+        return this.X[0];
+    }
+    
+    public int getX2(){
+        return this.X[1];
+    }
 
+    public int getX3(){
+        return this.X[2];
+    }
+
+    public int getMAR(){
+        return this.MAR;
+    }    
+    
+    public String getMBR(){
+        System.out.println(MBR);
+        return MBR;
+    }
+    
+    public String getIR(){
+        System.out.println(IR);
+        return this.IR;
+    }
+    
+    public int getMFR(){
+        return this.MFR;
+    }
+    
+    public String getCC(){
+        return this.CC;
+    }
 
 }
