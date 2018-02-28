@@ -27,7 +27,7 @@ public class ControlPanel extends JFrame{
    
    private JLabel label_instruction, label_Pc,label_Cc,label_Mfr,label_Ir,label_opcode,label_PC,label_CC, label_R1,label_R0,label_R2,label_R3,label_IX_R1,label_IX_R2,label_IX_R3,label_Mar,label_Mbr,label_Address;
    
-   private JLabel label_console_printer, label_console_keyboard,label_console_cache,label_Pc_val,label_Ir_val,label_R1_value,label_R0_value,label_R2_value,label_R3_value,label_CC_val, label_PC_val,label_opcode_val,
+   private JLabel label_program1,label_program2,label_console_printer, label_console_keyboard,label_console_cache,label_Pc_val,label_Ir_val,label_R1_value,label_R0_value,label_R2_value,label_R3_value,label_CC_val, label_PC_val,label_opcode_val,
                     label_IX_R1_val,label_IX_R2_val,label_IX_R3_val,label_Mar_val,label_Mbr_val,label_Value;
    
    private JTextField text_Pc,text_Ir,text_R1,text_R0,text_R2,text_R3,text_IX_R1,text_IX_R2,text_IX_R3,text_Mar,text_Mbr,text_Address,text_Val;
@@ -36,11 +36,12 @@ public class ControlPanel extends JFrame{
    private JTable text_console_cache;
    private JScrollPane scrollPane_cache;
    
-   private JButton button_execute,button_p1,button_p2,button_enter,button_run,button_halt,button_deposit,button_singlestep,button_console,button_memory,button_IPL;
+   private JButton button_load,button_find, button_compare,button_read20number,button_execute,button_p1,button_p2,button_enter,button_run,button_halt,button_deposit,button_singlestep,button_console,button_memory,button_IPL;
    private JRadioButton[] instruction;
    
    private String getTextPC, getTextR0, getTextR1, getTextR2, getTextR3, getTextX1, getTextX2, getTextX3, getTextMAR, getTextMBR, getTextIR;
    private String getKey, getValue;
+   
    
    public String ConsoleString = "";
    
@@ -440,7 +441,17 @@ public class ControlPanel extends JFrame{
         this.text_Val=new JTextField();
         this.text_Val.setPreferredSize(new Dimension(100, 30));
         this.button_memory=new JButton("Deposit / Search");
-        this.button_memory.setPreferredSize(new Dimension(170, 50));
+        this.button_memory.setPreferredSize(new Dimension(140, 50));
+        this.button_compare=new JButton("Compare");
+        this.button_compare.setPreferredSize(new Dimension(90, 50));
+        this.button_read20number=new JButton("Read");
+        this.button_read20number.setPreferredSize(new Dimension(80, 50));
+        this.label_program1=new JLabel("Program1:");
+        
+        this.panel_memory.add(label_program1);
+        this.panel_memory.add(this.button_compare);
+        this.panel_memory.add(this.button_read20number);
+     
         this.panel_memory.add(this.label_Address);
         this.panel_memory.add(this.text_Address);
         this.panel_memory.add(this.label_Value);
@@ -469,21 +480,22 @@ public class ControlPanel extends JFrame{
          //panel control by single step run halt
         this.panel_control=new JPanel(new FlowLayout(FlowLayout.RIGHT,30,10));
         this.button_IPL=new JButton("IPL");
-        this.button_IPL.setPreferredSize(new Dimension(150, 50));
+        this.button_IPL.setPreferredSize(new Dimension(156, 50));
         this.button_singlestep=new JButton("Single");
-        this.button_singlestep.setPreferredSize(new Dimension(100, 50));
+        this.button_singlestep.setPreferredSize(new Dimension(90, 50));
         this.button_run=new JButton("Run");        
-        this.button_run.setPreferredSize(new Dimension(100, 50));
+        this.button_run.setPreferredSize(new Dimension(90, 50));
         this.button_halt=new JButton("Halt");
-        this.button_halt.setPreferredSize(new Dimension(100, 50));
-        this.button_p1=new JButton("Program 1");
-        this.button_p1.setPreferredSize(new Dimension(100, 50));
-        this.button_p2=new JButton("Program 2");
-        this.button_p2.setPreferredSize(new Dimension(100, 50));
+        this.button_halt.setPreferredSize(new Dimension(90, 50));
+        this.button_load=new JButton("Load");
+        this.button_load.setPreferredSize(new Dimension(90, 50));
+        this.button_find=new JButton("Find");
+        this.button_find.setPreferredSize(new Dimension(90, 50));
+        this.label_program2=new JLabel("Program2:");
         
-
-        this.panel_control.add(this.button_p1);
-        this.panel_control.add(this.button_p2);
+        this.panel_control.add(this.label_program2);
+        this.panel_control.add(this.button_load);
+        this.panel_control.add(this.button_find);
         this.panel_control.add(this.button_singlestep);
         this.panel_control.add(this.button_run);
         this.panel_control.add(this.button_halt);
@@ -548,7 +560,7 @@ public class ControlPanel extends JFrame{
         
         
         this.panel_console_cache=new JPanel(new BorderLayout(10,10));
-        this.text_console_cache=new JTable(10,2);
+        this.text_console_cache=new JTable(16,2);
         this.text_console_cache.setEnabled(false);
         this.text_console_cache.setShowGrid(false);
         
@@ -557,8 +569,8 @@ public class ControlPanel extends JFrame{
         
         this.text_console_cache.setModel(new DefaultTableModel(
                 new Object[][] { { null, null }, { null, null }, { null, null }, { null, null }, { null, null },
-                        { null, null },  { null, null }, { null, null },{ null, null },
-                        { null, null }, { null, null },  },
+                        { null, null },  { null, null }, { null, null },{ null, null }, { null, null }, { null, null },{ null, null },
+                        { null, null }, { null, null },{ null, null },{ null, null }, { null, null },  },
                 new String[] { "Tag", "Data" }));
         
         this.scrollPane_cache.setPreferredSize(new Dimension(400, 210));
@@ -583,8 +595,10 @@ public class ControlPanel extends JFrame{
         
         //disable all button
        this.button_execute.setEnabled(false);
-       this.button_p1.setEnabled(false);
-       this.button_p2.setEnabled(false);
+       this.button_compare.setEnabled(false);
+       this.button_read20number.setEnabled(false);
+       this.button_load.setEnabled(false);
+       this.button_find.setEnabled(false);
        this.button_enter.setEnabled(false);
        this.button_run.setEnabled(false);
        this.button_halt.setEnabled(false);
@@ -812,8 +826,10 @@ public class ControlPanel extends JFrame{
         mainMemory.setValue(10, "1010100001011001");//store instruction STX, 1, 25
         //enable all button
         this.button_execute.setEnabled(true);
-        this.button_p1.setEnabled(true);
-        this.button_p2.setEnabled(true);
+        this.button_compare.setEnabled(true);
+        this.button_read20number.setEnabled(true);
+        this.button_load.setEnabled(true);
+        this.button_find.setEnabled(true);
         this.button_enter.setEnabled(true);
         this.button_run.setEnabled(true);
         this.button_halt.setEnabled(true);
