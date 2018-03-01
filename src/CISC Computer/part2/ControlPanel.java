@@ -11,6 +11,8 @@ package part2;
  */
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
@@ -19,24 +21,27 @@ public class ControlPanel extends JFrame{
    
    private JFrame frame;
    
-   private JPanel panel_memory,panel_mfranddeposit,panel_deposit,panel_control,panel_consoletext,panel_clearbutton,panel_left,panel_Pc,panel_Mfr,panel_Ir,panel_lastline,panel_console,Registerset0,Registerset1,Registerset2,Registerset3,Index_Reg1_set,Index_Reg2_set,Index_Reg3_set,Mar_set,Mbr_set;
+   private JPanel panel_console_print,panel_console_keyboard, panel_console_cache,panel_leftbot,panel_register,panel_instruction, panel_memory,panel_mfranddeposit,panel_deposit,panel_control,panel_consoletext,panel_clearbutton,panel_left,panel_Pc,panel_Mfr,panel_Ir,panel_lastline,panel_console,Registerset0,Registerset1,Registerset2,Registerset3,Index_Reg1_set,Index_Reg2_set,Index_Reg3_set,Mar_set,Mbr_set;
    
-   private JLabel[] Cc,Mfr,Ir,Register1,Register2,Register3,Register0,Index_Reg1,Index_Reg2,Index_Reg3,Mar,Mbr;
+   private JLabel[] Pc,Cc,Mfr,Ir,Register1,Register2,Register3,Register0,Index_Reg1,Index_Reg2,Index_Reg3,Mar,Mbr;
    
-   private JLabel label_Pc,label_Cc,label_Mfr,label_Ir,label_opcode,label_PC,label_CC, label_R1,label_R0,label_R2,label_R3,label_IX_R1,label_IX_R2,label_IX_R3,label_Mar,label_Mbr,label_Address;
+   private JLabel label_instruction, label_Pc,label_Cc,label_Mfr,label_Ir,label_opcode,label_PC,label_CC, label_R1,label_R0,label_R2,label_R3,label_IX_R1,label_IX_R2,label_IX_R3,label_Mar,label_Mbr,label_Address;
    
-   private JLabel label_Pc_val,label_Ir_val,label_R1_value,label_R0_value,label_R2_value,label_R3_value,label_CC_val, label_PC_val,label_opcode_val,
+   private JLabel label_program1,label_program2,label_console_printer, label_console_keyboard,label_console_cache,label_Pc_val,label_Ir_val,label_R1_value,label_R0_value,label_R2_value,label_R3_value,label_CC_val, label_PC_val,label_opcode_val,
                     label_IX_R1_val,label_IX_R2_val,label_IX_R3_val,label_Mar_val,label_Mbr_val,label_Value;
    
    private JTextField text_Pc,text_Ir,text_R1,text_R0,text_R2,text_R3,text_IX_R1,text_IX_R2,text_IX_R3,text_Mar,text_Mbr,text_Address,text_Val;
    
-   private JTextArea text_console;
+   private JTextArea text_console_print, text_console_keyboard;
+   private JTable text_console_cache;
+   private JScrollPane scrollPane_cache;
    
-   private JButton button_run,button_halt,button_deposit,button_singlestep,button_console,button_memory,button_IPL;
-   private JLabel[] Pc;
+   private JButton button_load,button_find, button_compare,button_read20number,button_execute,button_p1,button_p2,button_enter,button_run,button_halt,button_deposit,button_singlestep,button_console,button_memory,button_IPL;
+   private JRadioButton[] instruction;
    
    private String getTextPC, getTextR0, getTextR1, getTextR2, getTextR3, getTextX1, getTextX2, getTextX3, getTextMAR, getTextMBR, getTextIR;
    private String getKey, getValue;
+   
    
    public String ConsoleString = "";
    
@@ -53,12 +58,16 @@ public class ControlPanel extends JFrame{
 
     private void initComponents()
     {
-        this.frame = new JFrame("part1");
+        this.frame = new JFrame("part2");
         this.frame.setLayout(new BorderLayout(10,10));
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.frame.setLocation(500,50);
         this.frame.setResizable(true);
-        this.panel_left=new JPanel(new GridLayout(14,1));
+        this.panel_register=new JPanel(new GridLayout(12,1));
+        this.panel_left=new JPanel(new BorderLayout());
+        this.panel_leftbot=new JPanel(new GridLayout(3,1));
+        
+        
         
         
         //PC
@@ -84,7 +93,7 @@ public class ControlPanel extends JFrame{
             this.panel_Pc.add(this.Pc[i]);       
         this.panel_Pc.add(this.label_Pc_val);
         this.panel_Pc.add(this.text_Pc);
-        this.panel_left.add(this.panel_Pc);
+        this.panel_register.add(this.panel_Pc);
 
 
 
@@ -109,7 +118,7 @@ public class ControlPanel extends JFrame{
             this.Registerset0.add(this.Register0[i]);       
         this.Registerset0.add(this.label_R0_value);
         this.Registerset0.add(this.text_R0);
-        this.panel_left.add(this.Registerset0);
+        this.panel_register.add(this.Registerset0);
 
 
 
@@ -135,7 +144,7 @@ public class ControlPanel extends JFrame{
             this.Registerset1.add(this.Register1[i]);       
         this.Registerset1.add(this.label_R1_value);
         this.Registerset1.add(this.text_R1);
-        this.panel_left.add(this.Registerset1);
+        this.panel_register.add(this.Registerset1);
 
 
         //register2 panel
@@ -159,7 +168,7 @@ public class ControlPanel extends JFrame{
             this.Registerset2.add(this.Register2[i]);       
         this.Registerset2.add(this.label_R2_value);
         this.Registerset2.add(this.text_R2);        
-        this.panel_left.add(this.Registerset2);
+        this.panel_register.add(this.Registerset2);
 
         //register3 panel
         this.Registerset3=new JPanel(new FlowLayout(FlowLayout.LEFT,30,10));
@@ -181,7 +190,7 @@ public class ControlPanel extends JFrame{
             this.Registerset3.add(this.Register3[i]);       
         this.Registerset3.add(this.label_R3_value);
         this.Registerset3.add(this.text_R3);       
-        this.panel_left.add(this.Registerset3);
+        this.panel_register.add(this.Registerset3);
 
         //index register 1 panel
         this.Index_Reg1_set=new JPanel(new FlowLayout(FlowLayout.LEFT,30,10));
@@ -203,7 +212,7 @@ public class ControlPanel extends JFrame{
             this.Index_Reg1_set.add(this.Index_Reg1[i]);       
         this.Index_Reg1_set.add(this.label_IX_R1_val);
         this.Index_Reg1_set.add(this.text_IX_R1);       
-        this.panel_left.add(this.Index_Reg1_set);
+        this.panel_register.add(this.Index_Reg1_set);
 
 
         //index register 2 panel
@@ -227,7 +236,7 @@ public class ControlPanel extends JFrame{
             this.Index_Reg2_set.add(this.Index_Reg2[i]);       
         this.Index_Reg2_set.add(this.label_IX_R2_val);
         this.Index_Reg2_set.add(this.text_IX_R2);        
-        this.panel_left.add(this.Index_Reg2_set);
+        this.panel_register.add(this.Index_Reg2_set);
 
         //index register 3 panel
         this.Index_Reg3_set=new JPanel(new FlowLayout(FlowLayout.LEFT,30,10));
@@ -249,7 +258,7 @@ public class ControlPanel extends JFrame{
             this.Index_Reg3_set.add(this.Index_Reg3[i]);       
         this.Index_Reg3_set.add(this.label_IX_R3_val);
         this.Index_Reg3_set.add(this.text_IX_R3);        
-        this.panel_left.add(this.Index_Reg3_set);
+        this.panel_register.add(this.Index_Reg3_set);
 
 
         //MAR panel
@@ -273,7 +282,7 @@ public class ControlPanel extends JFrame{
             this.Mar_set.add(this.Mar[i]);       
         this.Mar_set.add(this.label_Mar_val);
         this.Mar_set.add(this.text_Mar);
-        this.panel_left.add(this.Mar_set);
+        this.panel_register.add(this.Mar_set);
 
 
 
@@ -298,7 +307,7 @@ public class ControlPanel extends JFrame{
             this.Mbr_set.add(this.Mbr[i]);       
         this.Mbr_set.add(this.label_Mbr_val);
         this.Mbr_set.add(this.text_Mbr);        
-        this.panel_left.add(this.Mbr_set);
+        this.panel_register.add(this.Mbr_set);
 
         
         
@@ -323,17 +332,17 @@ public class ControlPanel extends JFrame{
             this.panel_Ir.add(this.Ir[i]);       
         this.panel_Ir.add(this.label_Ir_val);
         this.panel_Ir.add(this.text_Ir);        
-        this.panel_left.add(this.panel_Ir);
+        this.panel_register.add(this.panel_Ir);
 
 
-        //MFR CC singlestep run and halt button  panel
+        //MFR CC  run and halt button  panel
 
         this.panel_Mfr=new JPanel(new FlowLayout(FlowLayout.LEFT,30,10));
         this.panel_deposit=new JPanel(new FlowLayout(FlowLayout.RIGHT,30,10));
         this.panel_mfranddeposit=new JPanel(new BorderLayout());
         
         this.button_deposit=new JButton("Deposit Reg");
-        this.button_deposit.setPreferredSize(new Dimension(100, 50));
+        this.button_deposit.setPreferredSize(new Dimension(130, 45));
         this.Mfr=new JLabel[20];
         this.Cc=new JLabel[5];
         this.label_Cc=new JLabel("CC");
@@ -390,9 +399,38 @@ public class ControlPanel extends JFrame{
         });
         this.panel_mfranddeposit.add(this.panel_Mfr,BorderLayout.CENTER);
         this.panel_mfranddeposit.add(this.panel_deposit,BorderLayout.EAST);      
-        this.panel_left.add(this.panel_mfranddeposit);
+        this.panel_register.add(this.panel_mfranddeposit);
 
+        //panel instruction
+        this.panel_instruction=new JPanel(null);
+        this.panel_instruction.setLayout(new FlowLayout(FlowLayout.LEFT,10,10));
+        this.instruction=new JRadioButton[20];
+        this.label_instruction=new JLabel("Instruction");
+        this.label_instruction.setPreferredSize(new Dimension(100,10));
+        this.button_execute=new JButton("Execute");
+        this.button_execute.setPreferredSize(new Dimension(100,50));
+       
+        
+             
+        this.panel_instruction.add(this.label_instruction);
+        for(int i=0; i<20;i++)
+        {
+            this.instruction[i]=new JRadioButton("");
+            this.instruction[i].setPreferredSize(new Dimension(30,30));
+            
+        }
 
+        for(int i=0;i<16;i++)
+            this.panel_instruction.add(this.instruction[i]);  
+        this.panel_instruction.add(this.button_execute);
+        
+   
+        this.panel_leftbot.add(this.panel_instruction);
+        
+        
+        
+        
+        
        //panel memory
         this.panel_memory=new JPanel(null);
         this.panel_memory.setLayout(new FlowLayout(FlowLayout.RIGHT,30,10));       
@@ -403,7 +441,17 @@ public class ControlPanel extends JFrame{
         this.text_Val=new JTextField();
         this.text_Val.setPreferredSize(new Dimension(100, 30));
         this.button_memory=new JButton("Deposit / Search");
-        this.button_memory.setPreferredSize(new Dimension(170, 50));
+        this.button_memory.setPreferredSize(new Dimension(140, 50));
+        this.button_compare=new JButton("Compare");
+        this.button_compare.setPreferredSize(new Dimension(90, 50));
+        this.button_read20number=new JButton("Read");
+        this.button_read20number.setPreferredSize(new Dimension(80, 50));
+        this.label_program1=new JLabel("Program1:");
+        
+        this.panel_memory.add(label_program1);
+        this.panel_memory.add(this.button_compare);
+        this.panel_memory.add(this.button_read20number);
+     
         this.panel_memory.add(this.label_Address);
         this.panel_memory.add(this.text_Address);
         this.panel_memory.add(this.label_Value);
@@ -425,32 +473,35 @@ public class ControlPanel extends JFrame{
             }
         });
         this.panel_memory.setPreferredSize(new Dimension(30, 1500));
-        this.panel_left.add(this.panel_memory);
+        this.panel_leftbot.add(this.panel_memory);
 
 
 
          //panel control by single step run halt
         this.panel_control=new JPanel(new FlowLayout(FlowLayout.RIGHT,30,10));
         this.button_IPL=new JButton("IPL");
-        this.button_IPL.setBorder(BorderFactory.createRaisedBevelBorder());
-        this.button_IPL.setBackground(Color.white);
-        this.button_IPL.setPreferredSize(new Dimension(150, 50));
+        this.button_IPL.setPreferredSize(new Dimension(156, 50));
         this.button_singlestep=new JButton("Single");
-        this.button_singlestep.setPreferredSize(new Dimension(100, 50));
-        this.button_singlestep.setBackground(Color.yellow);
-        this.button_run=new JButton("Run");
-        this.button_run.setBackground(Color.green);
-        this.button_run.setPreferredSize(new Dimension(100, 50));
+        this.button_singlestep.setPreferredSize(new Dimension(90, 50));
+        this.button_run=new JButton("Run");        
+        this.button_run.setPreferredSize(new Dimension(90, 50));
         this.button_halt=new JButton("Halt");
-        this.button_halt.setPreferredSize(new Dimension(100, 50));
-        this.button_halt.setBackground(Color.red);
-
+        this.button_halt.setPreferredSize(new Dimension(90, 50));
+        this.button_load=new JButton("Load");
+        this.button_load.setPreferredSize(new Dimension(90, 50));
+        this.button_find=new JButton("Find");
+        this.button_find.setPreferredSize(new Dimension(90, 50));
+        this.label_program2=new JLabel("Program2:");
         
+        this.panel_control.add(this.label_program2);
+        this.panel_control.add(this.button_load);
+        this.panel_control.add(this.button_find);
         this.panel_control.add(this.button_singlestep);
         this.panel_control.add(this.button_run);
         this.panel_control.add(this.button_halt);
         this.panel_control.add(this.button_IPL);
-        this.panel_left.add(this.panel_control);
+       
+        this.panel_leftbot.add(this.panel_control);
         
         this.button_singlestep.addActionListener(new java.awt.event.ActionListener() {
             @Override
@@ -477,43 +528,114 @@ public class ControlPanel extends JFrame{
         });
 
         this.button_IPL.addActionListener(new java.awt.event.ActionListener() {
+        	
+        	//enable all button
+        	
+        	
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("IPL");
                 initial();
+                
             }
         });
 
 
-        //console  right part
-        this.panel_console=new JPanel(new BorderLayout(10,20));
-        this.text_console=new JTextArea();
-        this.text_console.setPreferredSize(new Dimension(400, 700));
+        //console text area  right part
+        this.panel_console_print=new JPanel(new BorderLayout(0,0));
+        this.text_console_print=new JTextArea();
+        this.text_console_print.setPreferredSize(new Dimension(400, 300));
+        this.text_console_print.setLineWrap(true);
+        this.label_console_printer=new JLabel("Console Printer");
+        this.panel_console_print.add(label_console_printer,BorderLayout.NORTH);
+        this.panel_console_print.add(text_console_print,BorderLayout.CENTER);
+       
+        this.panel_console_keyboard=new JPanel(new BorderLayout(10,10));
+        this.text_console_keyboard=new JTextArea();
+        this.text_console_keyboard.setPreferredSize(new Dimension(400, 270));
+        this.text_console_keyboard.setLineWrap(true);
+        this.label_console_keyboard=new JLabel("Console Keyboard");
+        this.panel_console_keyboard.add(label_console_keyboard,BorderLayout.NORTH);
+        this.panel_console_keyboard.add(text_console_keyboard,BorderLayout.CENTER);
+        
+        
+        this.panel_console_cache=new JPanel(new BorderLayout(10,10));
+        this.text_console_cache=new JTable(16,2);
+        this.text_console_cache.setEnabled(false);
+        this.text_console_cache.setShowGrid(false);
+        
+        this.scrollPane_cache = new JScrollPane();
+        this.scrollPane_cache.setViewportView(text_console_cache);
+        
+        this.text_console_cache.setModel(new DefaultTableModel(
+                new Object[][] { { null, null }, { null, null }, { null, null }, { null, null }, { null, null },
+                        { null, null },  { null, null }, { null, null },{ null, null }, { null, null }, { null, null },{ null, null },
+                        { null, null }, { null, null },{ null, null },{ null, null }, { null, null },  },
+                new String[] { "Tag", "Data" }));
+        
+        this.scrollPane_cache.setPreferredSize(new Dimension(400, 210));
+        
+        this.label_console_cache=new JLabel("Cache");
+        this.panel_console_cache.add(label_console_cache,BorderLayout.NORTH);
+        this.panel_console_cache.add(this.scrollPane_cache,BorderLayout.CENTER);
+        
+        //console button
         this.button_console=new JButton("CLEAR");
         this.button_console.setPreferredSize(new Dimension(100, 35));
-        this.panel_clearbutton=new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        this.panel_consoletext=new JPanel(new BorderLayout(10,20));
-        this.panel_consoletext.add(this.text_console,BorderLayout.CENTER);         
-        this.panel_clearbutton.add(this.button_console);        
-        this.panel_clearbutton.setPreferredSize(new Dimension(100, 50));        
-        this.panel_console.add(this.panel_consoletext,BorderLayout.NORTH);            
-        this.panel_console.add(this.panel_clearbutton,BorderLayout.SOUTH);
-        this.text_console.setLineWrap(true);
+        
+        this.button_enter=new JButton("ENTER");
+        this.button_enter.setPreferredSize(new Dimension(100, 35));
+        
+        
+        
+        
+        this.panel_clearbutton=new JPanel(new FlowLayout(FlowLayout.RIGHT,75,0));               
+        this.panel_clearbutton.add(this.button_console);  
+        this.panel_clearbutton.add(this.button_enter); 
+        
+        //disable all button
+       this.button_execute.setEnabled(false);
+       this.button_compare.setEnabled(false);
+       this.button_read20number.setEnabled(false);
+       this.button_load.setEnabled(false);
+       this.button_find.setEnabled(false);
+       this.button_enter.setEnabled(false);
+       this.button_run.setEnabled(false);
+       this.button_halt.setEnabled(false);
+       this.button_deposit.setEnabled(false);
+       this.button_singlestep.setEnabled(false);
+       this. button_console.setEnabled(false);
+       this. button_memory.setEnabled(false);
+      //
+        
+        
+     
+        // console text panel combine
+        this.panel_consoletext=new JPanel(new BorderLayout(10,10));
+        this.panel_consoletext.add(this.panel_console_print,BorderLayout.NORTH);   
+        this.panel_consoletext.add(this.panel_console_keyboard,BorderLayout.CENTER);  
+        this.panel_consoletext.add(this.panel_console_cache,BorderLayout.SOUTH);  
+        
+       
+        
+        
+        
         
         this.button_console.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Clear");
                 ConsoleString = "";
-                text_console.setText("");
+                text_console_print.setText("");
             }
         });
         
-        //this.panel_left.add(this.panel_console);
-        this.frame.add(panel_console,BorderLayout.EAST);
+        
+      
+       
           
        
-        //last line
+        /*/last line
         this.panel_lastline=new JPanel(new FlowLayout(FlowLayout.CENTER,25,10));
         this.label_opcode=new JLabel("OPCODE:");
         this.label_opcode_val=new JLabel("");
@@ -527,19 +649,33 @@ public class ControlPanel extends JFrame{
         this.panel_lastline.add(label_PC_val);
         this.panel_lastline.add(label_CC);
         this.panel_lastline.add(label_CC_val);
-        this.panel_lastline.setPreferredSize(new Dimension(100, 50));
-        this.panel_console.add(this.panel_lastline,BorderLayout.CENTER);
-
+        this.panel_lastline.setPreferredSize(new Dimension(100, 70));*/
         
-        this.panel_left.setPreferredSize(new Dimension(900, 900));
+       
+
+        //panel right layout setting
+        this.panel_console=new JPanel(new BorderLayout(10,10));
+        this.panel_console.add(this.panel_consoletext,BorderLayout.NORTH);            
+        this.panel_console.add(this.panel_clearbutton,BorderLayout.CENTER);
+        //this.panel_console.add(this.panel_lastline,BorderLayout.SOUTH);
+        
+        
+       
+        //panel_left layout setting
+        this.panel_register.setPreferredSize(new Dimension(900, 700));
+        this.panel_left.setPreferredSize(new Dimension(900, 950));
+        this.panel_left.add(panel_register,BorderLayout.NORTH);
+        this.panel_left.add(panel_leftbot, BorderLayout.CENTER);
         
         //create borderline
-        this.panel_left.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),"Rigester"));
+        this.panel_register.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),"Rigester"));
+        this.panel_leftbot.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),"Control"));
         this.panel_console.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),"User console"));
        
         
         
-        
+        //Frame add
+        this.frame.add(panel_console,BorderLayout.EAST);
         this.frame.add(panel_left,BorderLayout.CENTER);
         this.frame.setVisible(true);
         this.frame.pack();
@@ -688,6 +824,20 @@ public class ControlPanel extends JFrame{
         mainMemory.setValue(9, "1010010010001100");//store instruction LDX 2,12
         mainMemory.setValue(712, "0000001110011001");//store the required data to location 712
         mainMemory.setValue(10, "1010100001011001");//store instruction STX, 1, 25
+        //enable all button
+        this.button_execute.setEnabled(true);
+        this.button_compare.setEnabled(true);
+        this.button_read20number.setEnabled(true);
+        this.button_load.setEnabled(true);
+        this.button_find.setEnabled(true);
+        this.button_enter.setEnabled(true);
+        this.button_run.setEnabled(true);
+        this.button_halt.setEnabled(true);
+        this.button_deposit.setEnabled(true);
+        this.button_singlestep.setEnabled(true);
+        this. button_console.setEnabled(true);
+        this. button_memory.setEnabled(true);
+    	
     }
     
     
@@ -737,7 +887,7 @@ public class ControlPanel extends JFrame{
                 NumPC = NumPC;
                 cpu.setPC(NumPC);                
                 ConsoleString = ConsoleString + "\r\nchange PC to "+TextPC;
-                this.text_console.setText(ConsoleString);
+                this.text_console_print.setText(ConsoleString);
             }
             else{
                 NumPC = CPU_PC;
@@ -765,7 +915,7 @@ public class ControlPanel extends JFrame{
                 NumMAR = NumMAR;
                 cpu.setMAR(NumMAR);
                 ConsoleString = ConsoleString + "\r\nchange MAR to "+TextMAR;
-                this.text_console.setText(ConsoleString);
+                this.text_console_print.setText(ConsoleString);
             }
             else{
                 NumMAR = CPU_MAR;
@@ -792,7 +942,7 @@ public class ControlPanel extends JFrame{
                 //NumMBR = NumMBR;
                 cpu.setMBR(TextMBR);
                 ConsoleString = ConsoleString + "\r\nchange MBR to "+TextMBR;
-                this.text_console.setText(ConsoleString);
+                this.text_console_print.setText(ConsoleString);
             }
             else{
                 NumMBR = Long.parseLong(CPU_MBR);
@@ -819,7 +969,7 @@ public class ControlPanel extends JFrame{
                 NumIR = NumIR;
                 cpu.setIR(TextIR);
                 ConsoleString = ConsoleString + "\r\nchange IR to "+TextIR;
-                this.text_console.setText(ConsoleString);
+                this.text_console_print.setText(ConsoleString);
             }
             else{
                 NumIR = Long.parseLong(CPU_IR);
@@ -850,7 +1000,7 @@ public class ControlPanel extends JFrame{
                 NumR0 = NumR0;
                 cpu.setGeneralRegister(0, TextR0);
                 ConsoleString = ConsoleString + "\r\nchange R0 to "+TextR0;
-                this.text_console.setText(ConsoleString);
+                this.text_console_print.setText(ConsoleString);
             }
             else{
                 NumR0 = Integer.parseInt(CPU_R0);
@@ -877,7 +1027,7 @@ public class ControlPanel extends JFrame{
                 NumR1 = NumR1;
                 cpu.setGeneralRegister(1, TextR1);
                 ConsoleString = ConsoleString + "\r\nchange R1 to "+TextR1;
-                this.text_console.setText(ConsoleString);
+                this.text_console_print.setText(ConsoleString);
             }
             else{
                 NumR1 = Integer.parseInt(CPU_R1);
@@ -904,7 +1054,7 @@ public class ControlPanel extends JFrame{
                 NumR2 = NumR2;
                 cpu.setGeneralRegister(1, TextR1);
                 ConsoleString = ConsoleString + "\r\nchange R2 to "+TextR2;
-                this.text_console.setText(ConsoleString);
+                this.text_console_print.setText(ConsoleString);
             }
             else{
                 NumR2 = Integer.parseInt(CPU_R2);
@@ -931,7 +1081,7 @@ public class ControlPanel extends JFrame{
                 NumR3 = NumR3;
                 cpu.setGeneralRegister(3, TextR3);
                 ConsoleString = ConsoleString + "\r\nchange R3 to "+TextR3;
-                this.text_console.setText(ConsoleString);
+                this.text_console_print.setText(ConsoleString);
             }
             else{
                 NumR3 = Integer.parseInt(CPU_R1);
@@ -962,7 +1112,7 @@ public class ControlPanel extends JFrame{
                 NumX1 = NumX1;
                 cpu.setIndexRegister(0, NumX1);
                 ConsoleString = ConsoleString + "\r\nchange X1 to "+TextX1;
-                this.text_console.setText(ConsoleString);
+                this.text_console_print.setText(ConsoleString);
             }
             else{
                 NumX1 = CPU_X1;
@@ -989,7 +1139,7 @@ public class ControlPanel extends JFrame{
                 NumX2 = NumX2;
                 cpu.setIndexRegister(1, NumX2);
                 ConsoleString = ConsoleString + "\r\nchange X2 to "+TextX2;
-                this.text_console.setText(ConsoleString);
+                this.text_console_print.setText(ConsoleString);
             }
             else{
                 NumX2 = CPU_X2;
@@ -1016,7 +1166,7 @@ public class ControlPanel extends JFrame{
                 NumX3 = NumX3;
                 cpu.setIndexRegister(2, NumX3);
                 ConsoleString = ConsoleString + "\r\nchange X3 to "+TextX3;
-                this.text_console.setText(ConsoleString);
+                this.text_console_print.setText(ConsoleString);
             }
             else{
                 NumX3 = CPU_X3;
@@ -1085,6 +1235,6 @@ public class ControlPanel extends JFrame{
         System.out.println(Add);
         mainMemory.setValue(key, Address);
         ConsoleString = ConsoleString + "\r\nDeposit " + AddIN + " to " + keyIN;
-        this.text_console.setText(ConsoleString);
+        this.text_console_print.setText(ConsoleString);
     }
 }
