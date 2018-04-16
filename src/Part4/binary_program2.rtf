@@ -1,0 +1,308 @@
+{\rtf1\ansi\ansicpg936\cocoartf1561\cocoasubrtf200
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 	1600, 0b111100110100      //LDA R3 m(20)\
+            \
+	//input 1 sentence==null?\
+	1601, 0b1111010100000010  //IN R1<-input\
+	1602, 0b111000110010      //LDA R2<-m(18)     R2=1601\
+          	1603, 0b1101000010100     //AIR R2<-R2+20     R2=1621\
+          	1604, 0b101000010010      //STR m(18)<-R2\
+          	1605, 0b10100100110010    //JZ R1==0?PC<-m(18):PC++\
+            \
+          	1606, 0b1111100100000001  //OUT output<-R1\
+          	1607, 0b110000111111      //LDA R0<-m(31)     R0=0\
+          	1608, 0b1100000000001     //AIR R0<-R0+1      R0=1    1 word\
+          	1609, 0b100000011111      //STR m(31)<-R1     m(31)=1\
+          	1610, 0b110000110100      //LDA R0<-m(20)     R0=99\
+          	1611, 0b1100000000001     //AIR R0<-R0+1      R0=100\
+          	1612, 0b100000010100      //STR m(20)<-R0     m(20)=100\
+          	1613, 0b100100110100      //STR m(100)<-R1    store input at address 100\
+          	1614, 0b111000110010      //LDA R2<-m(18)     R2=1621\
+          	1615, 0b1111000010100     //SIR R2<-R2-imm(20)R2=1601\
+          	1616, 0b101000010010      //STR m(18)<-R2     m(18)=1601\
+          	1617, 0b11010000110010    //JMA m(18)         PC=1601\
+            \
+          	//input 2 sentence==null?\
+          	1621, 0b111110110001111   //SRC reset R1<-0\
+          	1622, 0b1100100001010     //AIR R1<-R1+imm(10) R1=10\
+          	1623, 0b1111100100000001  //OUT output<-R1\
+          	1624, 0b101100010100      //STR m(20)<-R3\
+\
+\
+\
+ 	1700, 0b111100110011      //LDA R3<-m(19)     R3=79\
+        \
+        	//read word\
+        	1701, 0b1111010100000000  //IN R1<-input\
+        	1702, 0b111000110001      //LDA R2<-m(17)     R2=1701\
+        	1703, 0b1101000010100     //AIR R2<-R2+imm(20)R2=1721\
+        	1704, 0b101000010001      //STR m(17)<-R2     m(17)=1721\
+        	1705, 0b10100100110001    //JZ if input zero\
+        \
+        	1706, 0b1111100100000001  //OUT output<-R1\
+        	//update length\
+        	1707, 0b110000111110      //LDA R0<-m(30)     R0=0    length of word\
+        	1708, 0b1100000000001     //AIR R0<-R0+imm(1) R0=1\
+        	1709, 0b100000011110      //STR m(30)<-R0\
+        	//update word index\
+        	1710, 0b110000110011      //LDA R0<-m(19)     R0=79\
+        	1711, 0b1100000000001     //AIR R0<-R0+imm(1) R0=80\
+        	1712, 0b100000010011      //STR m(19)<-R0\
+        	1713, 0b100100110011      //STR m(m(19))<-R1  store word at 80 I=1\
+        	1714, 0b111000110001      //LDA R2<-m(17)     R2=1721\
+        	1715, 0b1111000010100     //SIR R2<-R2-imm(20)\
+        	1716, 0b101000010001      //STR m(17)<-R2\
+        	1717, 0b11010000110001    //JMA PC<-1701\
+        \
+        	1721, 0b111110110001111   //SRC reset R1\
+        	1722, 0b1100100001010     //AIR R1<-R1+imm(10)\
+        	1723, 0b1111100100000001  //OUT R1\
+        	1724, 0b101100010011      //STR m(19)<-R3\
+\
+\
+           900, 0b11000011111        //LDA R3<-m(31)     R3=266\
+          	901, 0b1101000000001      //AIR R3<-R3+imm(1) R3=1\
+           902, 0b100011000101111    //SOB --------------------\
+           903, 0b11010000101110     //JMA PC<-m(14)     jump to end of program 989\
+           \
+           904, 0b10000010110        //LDR R0<-m(22)     R0=i\
+           905, 0b1100000000001      //AIR R0<-R0+imm(1)\
+           906, 0b100000010110       //STR m(22)<-R0\
+           907, 0b10000010100        //LDR R0<-m(m(20))  R0=99\
+           908, 0b1100000000001      //AIR R0<-R0+imm(1) R0=100\
+           909, 0b100000010100       //STR m(20)<-R0\
+           \
+           //whether '.'\
+           910, 0b10100110100        //LDR R1<-m(m(20))  load sentence from address 100\
+           911, 0b10000011001        //LDR R0<-m(m(25))  R0=46 load '.'\
+           912, 0b101100001000000    //TRR R1 R0         whether == '.'\
+           913, 0b11001100101101     //JCC if=='.' PC<-m(13) PC=951\
+           \
+           //whether ' '\
+           914, 0b10000011011        //LDR R0<-m(m(27))  load ' '\
+           915, 0b101100001000000    //TRR R1 R0         whether == ' '\
+           916, 0b11001100101100     //JCC if==' ' PC<-m(12) PC=961\
+           \
+           //check word\
+           917, 0b11000100111        //LDR R2<-m(m(80)) first capital of word\
+           918, 0b101100110000000    //TRR R1 R2\
+           919, 0b11001100101011     //JCC if==captial PC=937\
+           \
+           //not equal\
+           //reset i\
+           920, 0b10000010110        //LDR R0<-m(m(22))  R0=i\
+           921, 0b1010000010101      //SMR R0<-i-j\
+           922, 0b100000010110       //STR m(22)<-R0\
+           //reset index of sentences\
+           923, 0b10000010100        //LDR R0<-m(m(20))  R0=100\
+           924, 0b1010000010101      //SMR R0<-100-j\
+           925, 0b100000010100       //STR m(20)<-100-j\
+           \
+           926, 0b10000011001        //LDR R0<-m(m(25))  R0='.'\
+           927, 0b101100001000000    //TRR R1 R0\
+           928, 0b11001100101010     //JCC if==captial PC=969\
+           \
+           929, 0b10000011011        //LDR R0<-m(m(27))  R0=' '\
+           930, 0b101100001000000    //TRR R1 R0         whether == ' '\
+           931, 0b11001100101001     //JCC if==' ' PC<-m(9) PC=979\
+           //reset j\
+           932, 0b10000011010        //LDR R0<-m(m(26))  R0=0\
+           933, 0b100000010101       //STR m(21)<-R0     j=0\
+           \
+           //return check\
+           934, 0b10000010000        //LDR R0<-m(m(16))  R0=80\
+           935, 0b100000000111       //STR m(7)<-R0\
+           936, 0b11010000101000     //JMA PC<-902\
+           \
+           //begin check second captial..\
+           937, 0b10000010101        //LDR R0<-m(21)     R0=j\
+           938, 0b100100011000       //STR m(24)<-R1\
+           939, 0b10100011110        //LDR R1<-m(30)\
+           940, 0b1110100000001      //SIR R1<-R1-imm(1)\
+           941, 0b101100001000000    //TRR R1 R0\
+           942, 0b10100011000        //STR m(24)<-R1\
+           943, 0b11001100101110     //JCC R1==R0?989:PC++\
+           944, 0b10000010101        //LDR R0<-m(21)     R0=j\
+           945, 0b1100000000001      //AIR R0<-R0+imm(1) j increase\
+           946, 0b100000010101       //STR m(21)<-R0\
+           947, 0b10000000111        //LDR R0<-m(7)\
+           948, 0b1100000000001      //AIR R0<-R0+imm(1)\
+           949, 0b100000000111       //STR m(7)<-R0\
+           950, 0b11010000101000     //JMA PC<-902\
+           \
+           951, 0b10000011101        //LDR R0<-m(29)\
+           952, 0b1100000000001      //AIR R0<-R0+imm(1)\
+           953, 0b100000011101       //STR m(29)<-R0\
+           954, 0b10000011010        //LDR R0<-m(26)\
+           955, 0b100000011100       //STR m(28)<-R0     set m(28)=0\
+           956, 0b10000001101        //LDR R0<-m(13)     R0=951\
+           957, 0b1110000011111      //SIR R0<-R0-imm(31) = 920\
+           958, 0b1110000000110      //SIR R0<-R0-imm(6) = 914\
+           959, 0b100000000110       //STR m(6)<-R0\
+           960, 0b11010000100110     //JMA PC<-914\
+           \
+           961, 0b10000011100        //LDR R0<-m(28)\
+           962, 0b1100000000001      //AIR R0<-R0+imm(1)\
+           963, 0b100000011100       //STR m(28)<-R0\
+           964, 0b10000001101        //LDR R0<-m(12)     R0=961\
+           965, 0b1110000011111      //SIR R0<-R0-imm(31) = 930\
+           966, 0b1110000001101      //SIR R0<-R0-imm(13) = 917\
+           967, 0b100000000110       //STR m(6)<-R0\
+           968, 0b11010000100110     //JMA PC<-917\
+           \
+           969, 0b10000001010        //LDR R0<-m(10)     R0=969\
+           970, 0b1110000011111      //SIR R0<-R0-imm(31) = 938\
+           971, 0b1110000001001      //SIR R0<-R0-imm(9) = 929\
+           972, 0b100000000110       //STR m(6)<-R0\
+           973, 0b10000010101        //LDR R0<-m(21)\
+           974, 0b10100000100110     //JZ j==0 PC<-m(6)\
+           \
+           975, 0b10000011101        //LDR R0<-m(29)\
+           976, 0b1110000000001      //SIR R0<-R0-imm(1)\
+           977, 0b100000011101       //STR m(29)<-R0\
+           978, 0b11010000100110     //JMA PC<-m(29)\
+           \
+           979, 0b10000001001        //LDR R0<-m(9) 979\
+           980, 0b1110000011111      //SIR R0<-R0-imm(31) = 948\
+           981, 0b1110000010000      //SIR R0<-R0-imm(16) = 932\
+           982, 0b100000000110       //STR m(6)<-R0\
+           983, 0b10000010101        //LDR R0<-m(21)\
+           984, 0b10100000100110     //JZ\
+           \
+           985, 0b10000011100        //LDR R0<-m(28)\
+           986, 0b1110000000001      //SIR R0<-R0-imm(1)\
+           987, 0b100000011100       //STR m(28)<-R0\
+           988, 0b11010000100110     //JMA\
+           989, 0b10000011101        //LDR R0<-m(29)\
+\
+\
+         	31, 1009 // start of the block (0)\
+	// m(30) store the number that you want to print\
+	6, 50 // store every digit of the numbers starting from\
+\
+	// program begins\
+\
+	1000, 0b111110110001111 // reset r1\
+	1001, 0b1100100001010   // AIR r1, 10\
+	1002, 0b100100100110    // store r1 into location of content of m(6)\
+	1003, 0b111100100110    // load r3 with content of m(6)\
+	1004, 0b1101100000001   // AIR r3, 1\
+	1005, 0b101100000110    // store r3 into m(6)\
+	1006, 0b111111010001111 // reset r2\
+	1007, 0b1101000001010   // AIR r2, 10\
+	1008, 0b110000111100    // load r0 with content of m(28)\
+\
+	// (0)\
+	1009, 0b101010010000000 // DVD r0, r2\
+	1010, 0b111100111111    // load r3 with content of m(31)\
+	1011, 0b1101100010100   // AIR r3, 20\
+	1012, 0b101100011111    // store r3 into m(31)\
+	1013, 0b10100000111111  // JZ r0, content of m(31), means if r0 == 0\
+									// jump to (1)\
+	1014, 0b1100100011000   // r1 + 48, convert to ascii\
+	1015, 0b1100100011000\
+	1016, 0b100100100110    // store r1 into location of content of m(6)\
+	1017, 0b111100100110    // load r3 with content of m(6)\
+	1018, 0b1101100000001   // AIR r3, 1\
+	1019, 0b101100000110    // store r3 into m(6)\
+	1020, 0b111100111111    // load r3 with content of m(31)\
+	1021, 0b1111100010100   // SIR r3, 20\
+	1022, 0b101100011111    // store r3 into m(31)\
+	1023, 0b11010000111111  // JMA, content of m(31), means jump to (0)\
+\
+	// (1) r0 == 0, means has reach the highest digit of the number\
+	1029, 0b1100100011000   // r1 + 48, convert to ascii\
+	1030, 0b1100100011000\
+	1031, 0b100100100110    // store r1 into location of content of m(6)\
+	1032, 0b111100111111    // load r3 with content of m(31)\
+	1033, 0b1101100010100   // AIR r3, 20\
+	1034, 0b101100011111    // store r3 into m(31)\
+	1035, 0b111111010001111 // reset r2\
+	1036, 0b1101000001010   // AIR r2, 10 (new line sign, use to compare)\
+	1037, 0b11010000111111  // JMA, content of m(31), means jump to (2)\
+\
+	// (2) print the digit one by one\
+	1049, 0b10100100110     // load r1 with address of content of m(6)\
+	1050, 0b1111100100000001// print r1 to console\
+	1051, 0b111100111111    // load r3 with content of m(31)\
+	1052, 0b1101100010100   // AIR r3, 20\
+	1053, 0b101100011111    // store r3 into m(31)\
+	1054, 0b101100110000000 // TRR r1, r2\
+	1055, 0b11001100111111  // JCC cc(3), content of m(31), mean jump to\
+									// (3)\
+	1056, 0b111100100110    // load r3 with content of m(6)\
+	1057, 0b1111100000001   // SIR r3, 1\
+	1058, 0b101100000110    // store r3 into m(6)\
+	1059, 0b111100111111    // load r3 with content of m(31)\
+	1060, 0b1111100010100   // SIR r3, 20\
+	1061, 0b101100011111    // store r3 into m(31)\
+	1062, 0b11010000111111  // JMA, content of m(31), means jump to (2)\
+\
+	// (3) finish printing the numbers\
+	1069, 0\
+\
+	31, 1109 // start of the block (0)\
+	// m(30) store the number that you want to print\
+	6, 50 // store every digit of the numbers starting from\
+                \
+	1100, 0b111110110001111 // reset r1\
+	1101, 0b1100100001010   // AIR r1, 10\
+	1102, 0b100100100110    // store r1 into location of content of m(6)\
+	1103, 0b111100100110    // load r3 with content of m(6)\
+	1104, 0b1101100000001   // AIR r3, 1\
+	1105, 0b101100000110    // store r3 into m(6)\
+	1106, 0b111111010001111 // reset r2\
+	1107, 0b1101000001010   // AIR r2, 10\
+	1108, 0b110000111101    // load r0 with content of m(29)\
+\
+	// (0)\
+	1109, 0b101010010000000 // DVD r0, r2\
+	1110, 0b111100111111    // load r3 with content of m(31)\
+	1111, 0b1101100010100   // AIR r3, 20\
+	1112, 0b101100011111    // store r3 into m(31)\
+	1113, 0b10100000111111  // JZ r0, content of m(31), means if r0 == 0\
+									// jump to (1)\
+	1114, 0b1100100011000   // r1 + 48, convert to ascii\
+	1115, 0b1100100011000\
+	1116, 0b100100100110    // store r1 into location of content of m(6)\
+	1117, 0b111100100110    // load r3 with content of m(6)\
+	1118, 0b1101100000001   // AIR r3, 1\
+	1119, 0b101100000110    // store r3 into m(6)\
+	1120, 0b111100111111    // load r3 with content of m(31)\
+	1121, 0b1111100010100   // SIR r3, 20\
+	1122, 0b101100011111    // store r3 into m(31)\
+	1123, 0b11010000111111  // JMA, content of m(31), means jump to (0)\
+	// (1) r0 == 0, means has reach the highest digit of the number\
+	1129, 0b1100100011000   // r1 + 48, convert to ascii\
+	1130, 0b1100100011000\
+	1131, 0b100100100110    // store r1 into location of content of m(6)\
+	1132, 0b111100111111    // load r3 with content of m(31)\
+	1133, 0b1101100010100   // AIR r3, 20\
+	1134, 0b101100011111    // store r3 into m(31)\
+	1135, 0b111111010001111 // reset r2\
+	1136, 0b1101000001010   // AIR r2, 10 (new line sign, use to compare)\
+	1137, 0b11010000111111  // JMA, content of m(31), means jump to (2)\
+	// (2) print the digit one by one\
+	1149, 0b10100100110     // load r1 with address of content of m(6)\
+	1150, 0b1111100100000001// print r1 to console\
+	1151, 0b111100111111    // load r3 with content of m(31)\
+	1152, 0b1101100010100   // AIR r3, 20\
+	1153, 0b101100011111    // store r3 into m(31)\
+	1154, 0b101100110000000 // TRR r1, r2\
+	1155, 0b11001100111111  // JCC cc(3), content of m(31), mean jump to\
+									// (3)\
+	1156, 0b111100100110    // load r3 with content of m(6)\
+	1157, 0b1111100000001   // SIR r3, 1\
+	1158, 0b101100000110    // store r3 into m(6)\
+	1159, 0b111100111111    // load r3 with content of m(31)\
+	1160, 0b1111100010100   // SIR r3, 20\
+	1161, 0b101100011111    // store r3 into m(31)\
+	1162, 0b11010000111111  // JMA, content of m(31), means jump to (2)\
+\
+	// (3) finish printing the numbers\
+	1169, 0}
