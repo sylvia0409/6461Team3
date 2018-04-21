@@ -30,7 +30,10 @@ import memory.Cache;
 import util.MachineFaultException;
 import util.StringUtil;
 import util.Program2;
+import util.ProgramFixed2Float;
+import util.ProgramFloat2Fixed;
 import util.ProgramFloatAdd;
+import util.ProgramFloatSub;
 
 public class ControlPanel extends JFrame{
    
@@ -490,9 +493,11 @@ public class ControlPanel extends JFrame{
                                     op = sub;
                                 }else{
                                     if(op.equals(add)){
-                                        result += Float.parseFloat(temp);
+                                        mcu.loadProgram(ProgramFloatAdd.StoreFloat);
+                                        mcu.loadProgram(ProgramFloatAdd.Read_FloatAdd);
                                     }else{
-                                        result -= Float.parseFloat(temp);
+                                        mcu.loadProgram(ProgramFloatSub.StoreFloat);
+                                        mcu.loadProgram(ProgramFloatSub.Read_FloatSub);
                                     }
                                 }
                             }
@@ -520,23 +525,11 @@ public class ControlPanel extends JFrame{
                             DecimalFormat fnum = new DecimalFormat("##0.00000000");
                             
                             if(op.equals(fixed_num)){
-                                result1 = (float) (Float.parseFloat(temp_string[0])* Math.pow(10, Integer.parseInt(temp_string[1])));
-                                result2 = 0;
+                                mcu.loadProgram(ProgramFloat2Fixed.StoreFloat);
+                                mcu.loadProgram(ProgramFloat2Fixed.Float2Fixed);
                             }else{
-                                result1 = Float.parseFloat(temp_string[0]);
-                                if(result1>10){
-                                    while(result1>10){
-                                        result2 += 1;
-                                        result1 /= 10;
-                                    }
-                                }else if(result1<1){
-                                    while(result1<1){
-                                        result2 -=1;
-                                        result1 *=10;
-                                    }
-                                }else{
-                                    result2 = 0;                         
-                                }
+                                mcu.loadProgram(ProgramFixed2Float.StoreFloat);
+                                mcu.loadProgram(ProgramFixed2Float.Float2Fixed);
                             }
                             printConsole("the result is " + result1 + " exp is " + result2);
                             refreshPanel();
